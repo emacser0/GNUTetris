@@ -59,6 +59,7 @@ namespace basic_system {
       inline int& operator>>=(int &v) {
         if(index==7) {
           shuffle_seq();
+          index=0;
         }
         v = _seq[index++];
         return v;
@@ -112,6 +113,8 @@ namespace basic_system {
   private:
     std::array<Grid1D<xsize>,ysize> _grid;
   };
+  template <const int xsize,const int ysize>
+  class Displayer;
 
   template <const int xsize,const int ysize>
   class Drawer {
@@ -134,7 +137,8 @@ namespace basic_system {
       int table[4]={0x8,0x4,0x2,0x1};
       for(int i=0;i<4;i++,calculated/=16) {
         for(int j=0;j<4;j++) {
-          (*_grid)[y+i][x+j]=(block&(table[j]*calculated))?'#':' ';
+          (*_grid)[y+i][x+j]=(block&(table[j]*calculated))?'#':
+            (*_grid)[y+i][x+j];
         }
       }
     }
@@ -157,14 +161,18 @@ namespace basic_system {
       clear_grid(x,x+1,1,ysize-1);
     }
     inline Drawer<xsize,ysize>&
-    operator<=(unsigned char& ch) {
+    operator<<=(unsigned char& ch) {
       draw_wall(ch);
       return *this;
     }
     inline Drawer<xsize,ysize>&
-    operator<=(unsigned char ch) {
+    operator<<=(unsigned char ch) {
       draw_wall(ch);
       return *this;
+    }
+    inline Displayer<xsize,ysize>&
+    operator>>=(Displayer<xsize,ysize>& displayer) {
+      return displayer;
     }
     inline Drawer<xsize,ysize>&
     operator!() {
@@ -235,19 +243,11 @@ namespace tetris {
     };
   //b is an alias of block
 
-  template <const int xsize,const int ysize>
-  class CollideChecker {
-  public:
-    CollideChecker(basic_system::Grid2D<xsize,ysize> *grid) {
-      _grid=grid;
-    }
-  protected:
-  private:
-    basic_system::Grid2D<xsize,ysize> *_grid;
-  };
   struct Block{
     int x,y,block;
   };
+  template <const int xsize,const int ysize>
+  class CollideChecker;
   template <const int xsize,const int ysize>
   class BlockManager {
   public:
@@ -281,11 +281,6 @@ namespace tetris {
       _cur_block.x=startx;
       _cur_block.y=starty;
     }
-    basic_system::Drawer<xsize,ysize>&
-    bind_block(basic_system::Drawer<xsize,ysize> &drawer) {
-      drawer.draw_block(_cur_block.block,_cur_block.x,_cur_block.y);
-      return drawer;
-    }
     inline BlockManager<xsize,ysize>&
     operator!() {
       change_block();
@@ -293,7 +288,12 @@ namespace tetris {
     }
     inline basic_system::Drawer<xsize,ysize>&
     operator>>=(basic_system::Drawer<xsize,ysize> &drawer) {
-      return bind_block(drawer);
+      drawer.draw_block(_cur_block.block,_cur_block.x,_cur_block.y);
+      return drawer;
+    }
+    inline bool
+    operator>>=(CollideChecker<xsize,ysize> &cc) {
+      return cc.check(_cur_block.block,_cur_block.x,_cur_block.y);
     }
     template <typename T>
     inline BlockManager<xsize,ysize>&
@@ -307,39 +307,60 @@ namespace tetris {
     Block _cur_block;
   private:
   };
+  template <const int xsize,const int ysize>
+  class CollideChecker {
+  public:
+    CollideChecker(basic_system::Grid2D<xsize,ysize> *grid) {
+      _grid=grid;
+    }
+    bool check(unsigned int block,int x,int y) {
+      int calculated=std::pow(16,3);
+      int table[4]={0x8,0x4,0x2,0x1};
+      for(int i=0;i<4;i++,calculated/=16) {
+        for(int j=0;j<4;j++) {
+          if((*_grid)[y+i][x+j]!=' '&&
+             (block&(table[j]*calculated))) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+  protected:
+  private:
+    basic_system::Grid2D<xsize,ysize> *_grid;
+  };
   namespace scoring {
     unsigned int score,spin[7];
   }
-
 }
 
-template <const int xsize,const int ysize>
-basic_system::Drawer<xsize,ysize>&
-operator>>=(tetris::BlockManager<xsize,ysize> *bm,
-            basic_system::Drawer<xsize,ysize> &drawer) {
-  return bm->bind_block(drawer);
-}
+
 
 namespace bs = basic_system;
+namespace ts = tetris;
 int
 main(int __attribute__((unused)) argc,
      char __attribute__((unused)) **argv) {
-  auto grid=bs::Grid2D<tetris::x_size,tetris::y_size>();
-  auto displayer = bs::Displayer<tetris::x_size,tetris::y_size>(&grid);
-  auto drawer = bs::Drawer<tetris::x_size,tetris::y_size>(&grid);
-  auto collide_checker=tetris::
-    CollideChecker<tetris::x_size,tetris::y_size>(&grid);
-  auto block_manager=tetris::
-    BlockManager<tetris::x_size,tetris::y_size>();
-  !block_manager;
-  drawer <= '@';
-  int time=30;
+  auto grid=bs::Grid2D<ts::x_size,ts::y_size>();
+  auto displayer = bs::Displayer<ts::x_size,ts::y_size>(&grid);
+  auto drawer = bs::Drawer<ts::x_size,ts::y_size>(&grid);
+  auto collide_checker=ts::
+    CollideChecker<ts::x_size,ts::y_size>(&grid);
+  auto block_manager=ts::
+    BlockManager<ts::x_size,ts::y_size>();
+  int time=100;
   std::array<int,2> move_d={0,1};
+  int freq=100;
+  !block_manager;
+  drawer <<= '@';
   while(time--) {
-    block_manager >>= !drawer;
-    displayer >>= std::cout;
+    ((block_manager >>= drawer) >>= displayer) >>= std::cout;
+    !drawer;
     block_manager <<= move_d;
-
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+    if(block_manager >>= collide_checker) {
+      !block_manager;
+    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(freq));
   }
 }
