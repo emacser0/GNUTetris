@@ -23,7 +23,7 @@ namespace basic_system {
                      now().time_since_epoch().
                      count()));
       };
-      T& operator>>=(T &v) {
+      inline T& operator>>=(T &v) {
         v=generator();
         return v;
       }
@@ -56,7 +56,7 @@ namespace basic_system {
       shuffle_seq_std() {
         std::random_shuffle(_seq.begin(),_seq.end());
       }
-      int operator>>=(int &v) {
+      inline int& operator>>=(int &v) {
         if(index==7) {
           shuffle_seq();
         }
@@ -83,7 +83,7 @@ namespace basic_system {
         _grid[i]=ch;
       }
     }
-    unsigned char&
+    inline unsigned char&
     operator[](const int idx) {
       return _grid[idx];
     }
@@ -105,7 +105,7 @@ namespace basic_system {
         _grid[i]=Grid1D<xsize>(ch);
       }
     }
-    Grid1D<xsize>&
+    inline Grid1D<xsize>&
     operator[](const int idx) {
       return _grid[idx];
     }
@@ -156,6 +156,21 @@ namespace basic_system {
     void clear_line_vertical_without_wall(int x) {
       clear_grid(x,x+1,1,ysize-1);
     }
+    inline Drawer<xsize,ysize>&
+    operator<=(unsigned char& ch) {
+      draw_wall(ch);
+      return *this;
+    }
+    inline Drawer<xsize,ysize>&
+    operator<=(unsigned char ch) {
+      draw_wall(ch);
+      return *this;
+    }
+    inline Drawer<xsize,ysize>&
+    operator!() {
+      clear_grid_witout_wall();
+      return *this;
+    }
   protected:
     Grid2D<xsize,ysize> *_grid;
   private:
@@ -177,17 +192,12 @@ namespace basic_system {
     Displayer(Grid2D<xsize,ysize> *grid) {
       this->_grid=grid;
     }
-    std::ostream& clear(std::ostream &stream) {
+    inline std::ostream& clear(std::ostream &stream) {
       stream << "\033c";
       return stream;
     }
-    std::ostream& operator>>=(std::ostream &stream) {
-      return display(clear(stream));
-   }
-  protected:
-    Grid2D<xsize,ysize> *_grid;
-  private:
-    std::ostream& display(std::ostream &stream) {
+    inline std::ostream& operator>>=(std::ostream &stream) {
+      clear(stream);
       for(int i=0;i<ysize;i++) {
         for(int j=0;j<xsize;j++) {
           stream << (*_grid)[i][j];
@@ -195,9 +205,15 @@ namespace basic_system {
         stream << "\n";
       }
       return stream;
+   }
+  protected:
+    Grid2D<xsize,ysize> *_grid;
+  private:
+    std::ostream& display(std::ostream &stream) {
+      return this >>= stream;
     }
     std::ostream& display() {
-      return display(std::cout);
+      return this >>= std::cout;
     }
   };
 }
@@ -229,9 +245,9 @@ namespace tetris {
   private:
     basic_system::Grid2D<xsize,ysize> *_grid;
   };
-  typedef struct {
+  struct Block{
     int x,y,block;
-  } Block;
+  };
   template <const int xsize,const int ysize>
   class BlockManager {
   public:
@@ -265,24 +281,26 @@ namespace tetris {
       _cur_block.x=startx;
       _cur_block.y=starty;
     }
-    basic_system::Drawer<xsize,ysize>*
-    bind_block(basic_system::Drawer<xsize,ysize> *drawer) {
-      drawer->draw_block(_cur_block.block,_cur_block.x,_cur_block.y);
+    basic_system::Drawer<xsize,ysize>&
+    bind_block(basic_system::Drawer<xsize,ysize> &drawer) {
+      drawer.draw_block(_cur_block.block,_cur_block.x,_cur_block.y);
       return drawer;
     }
-    basic_system::Drawer<xsize,ysize>*
-    operator[](basic_system::Drawer<xsize,ysize> *drawer) {
+    inline BlockManager<xsize,ysize>&
+    operator!() {
+      change_block();
+      return *this;
+    }
+    inline basic_system::Drawer<xsize,ysize>&
+    operator>>=(basic_system::Drawer<xsize,ysize> &drawer) {
       return bind_block(drawer);
     }
-    basic_system::Drawer<xsize,ysize>&
-    operator>>=(basic_system::Drawer<xsize,ysize> &drawer) {
-      drawer.draw_block(_cur_block.block,_cur_block.x,_cur_block.y);
-      return drawer;
-    }
-    basic_system::Drawer<xsize,ysize>
-    operator>>=(basic_system::Drawer<xsize,ysize> drawer) {
-      drawer.draw_block(_cur_block.block,_cur_block.x,_cur_block.y);
-      return drawer;
+    template <typename T>
+    inline BlockManager<xsize,ysize>&
+    operator<<=(std::array<T,2> d) {
+      _cur_block.x+=d[0];
+      _cur_block.y+=d[1];
+      return *this;
     }
     basic_system::random::random_sequence<blocknumber> _seq;
   protected:
@@ -292,32 +310,36 @@ namespace tetris {
   namespace scoring {
     unsigned int score,spin[7];
   }
+
+}
+
+template <const int xsize,const int ysize>
+basic_system::Drawer<xsize,ysize>&
+operator>>=(tetris::BlockManager<xsize,ysize> *bm,
+            basic_system::Drawer<xsize,ysize> &drawer) {
+  return bm->bind_block(drawer);
 }
 
 namespace bs = basic_system;
 int
-main() {
-  auto grid=new bs::Grid2D<tetris::x_size,tetris::y_size>();
-  auto displayer = bs::Displayer<tetris::x_size,tetris::y_size>(grid);
-  // bs::Drawer<tetris::x_size,tetris::y_size> drawer(grid);
-  bs::Drawer<tetris::x_size,tetris::y_size>*
-    drawer=new bs::Drawer<tetris::x_size,tetris::y_size>(grid);
-  auto collide_checker=new tetris::
-    CollideChecker<tetris::x_size,tetris::y_size>(grid);
-  auto block_manager=new tetris::BlockManager<tetris::x_size,tetris::y_size>();
-  block_manager->change_block();
-  drawer->draw_wall('@');
+main(int __attribute__((unused)) argc,
+     char __attribute__((unused)) **argv) {
+  auto grid=bs::Grid2D<tetris::x_size,tetris::y_size>();
+  auto displayer = bs::Displayer<tetris::x_size,tetris::y_size>(&grid);
+  auto drawer = bs::Drawer<tetris::x_size,tetris::y_size>(&grid);
+  auto collide_checker=tetris::
+    CollideChecker<tetris::x_size,tetris::y_size>(&grid);
+  auto block_manager=tetris::
+    BlockManager<tetris::x_size,tetris::y_size>();
+  !block_manager;
+  drawer <= '@';
   int time=30;
+  std::array<int,2> move_d={0,1};
   while(time--) {
-    {
-      drawer->clear_grid_witout_wall();
-      block_manager->bind_block(drawer);
-      block_manager >>= drawer;
-    }
+    block_manager >>= !drawer;
     displayer >>= std::cout;
-    {
-      block_manager->move_block(0,1);
-    }
+    block_manager <<= move_d;
+
     std::this_thread::sleep_for(std::chrono::seconds(1));
   }
 }
