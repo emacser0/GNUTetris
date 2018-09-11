@@ -9,6 +9,7 @@ main(int __attribute__((unused)) argc,
   int freq=100;
 
   auto obj_mgr=ObjectManager<ts::x_size,ts::y_size>();
+
   auto grid=*(obj_mgr.grid);
   auto displayer=*(obj_mgr.displayer);
   auto drawer=*(obj_mgr.drawer);
