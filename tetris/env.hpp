@@ -21,5 +21,8 @@ namespace tetris {
 
   template <const int xsize,const int ysize>
   class BlockManager;
+
+  template <const int xsize,const int ysize>
+  class BlockStacker;
 }
 #endif
