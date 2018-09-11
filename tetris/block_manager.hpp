@@ -5,12 +5,33 @@
 #include "env.hpp"
 #include "block_stacker.hpp"
 #include "collide_checker.hpp"
+namespace tetris _GLIBCXX_VISIBILITY(hidden){
+  inline unsigned int
+  _rotate_r(unsigned int b) {
+    return
+      (((b&0x8000)>>3)|((b&0x800)<<2)|((b&0x80)<<7)|((b&0x8)<<12))|
+      (((b&0x4000)>>6)|((b&0x400)>>1)|((b&0x40)<<4)|((b&0x4)<<9))|
+      (((b&0x2000)>>9)|((b&0x200)>>4)|((b&0x20)<<1)|((b&0x2)<<6))|
+      (((b&0x1000)>>12)|((b&0x100)>>7)|((b&0x10)>>2)|((b&0x1)<<3));
+  }
+  inline unsigned int
+  _rotate_l(unsigned int b) {
+    return
+      (((b&0x8000)>>12)|((b&0x800)>>9)|((b&0x80)>>6)|((b&0x8)>>3))|
+      (((b&0x4000)>>7)|((b&0x400)>>4)|((b&0x40)>>1)|((b&0x4)<<2))|
+      (((b&0x2000)>>2)|((b&0x200)<<1)|((b&0x20)<<4)|((b&0x2)<<7))|
+      (((b&0x1000)<<3)|((b&0x100)<<6)|((b&0x10)<<9)|((b&0x1)<<12));
+  }
+}
 namespace tetris {
   struct Block{
   int x,y,block;
 };
+
+
 template <const int xsize,const int ysize>
   class CollideChecker;
+
   template <const int xsize,const int ysize>
   struct BlockPoint {
   public:
@@ -43,29 +64,16 @@ template <const int xsize,const int ysize>
   private:
     int _x,_y;
   };
+
   template <const int xsize,const int ysize>
   class BlockManager {
   public:
     friend class BlockPoint<xsize,ysize>;
     BlockManager() {
       _seq=basic_system::random::random_sequence<blocknumber>();
+      !(*this);
     }
-    unsigned int
-    rotate_r(unsigned int b) {
-      return
-        (((b&0x8000)>>3)|((b&0x800)<<2)|((b&0x80)<<7)|((b&0x8)<<12))|
-        (((b&0x4000)>>6)|((b&0x400)>>1)|((b&0x40)<<4)|((b&0x4)<<9))|
-        (((b&0x2000)>>9)|((b&0x200)>>4)|((b&0x20)<<1)|((b&0x2)<<6))|
-        (((b&0x1000)>>12)|((b&0x100)>>7)|((b&0x10)>>2)|((b&0x1)<<3));
-    }
-    unsigned int
-    rotate_l(unsigned int b) {
-      return
-        (((b&0x8000)>>12)|((b&0x800)>>9)|((b&0x80)>>6)|((b&0x8)>>3))|
-        (((b&0x4000)>>7)|((b&0x400)>>4)|((b&0x40)>>1)|((b&0x4)<<2))|
-        (((b&0x2000)>>2)|((b&0x200)<<1)|((b&0x20)<<4)|((b&0x2)<<7))|
-        (((b&0x1000)<<3)|((b&0x100)<<6)|((b&0x10)<<9)|((b&0x1)<<12));
-    }
+
     void move_block(int dx,int dy) {
       _cur_block.x+=dx;
       _cur_block.y+=dy;
@@ -77,6 +85,17 @@ template <const int xsize,const int ysize>
       _cur_block.x=startx;
       _cur_block.y=starty;
     }
+
+    inline unsigned int
+    rotate_r() {
+      return _cur_block.block=_rotate_r(_cur_block.block);
+    }
+
+    inline unsigned int
+    rotate_l() {
+      return _cur_block.block=_rotate_l(_cur_block.block);
+    }
+
     inline BlockManager<xsize,ysize>&
     operator!() {
       change_block();

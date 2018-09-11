@@ -1,6 +1,7 @@
 #ifndef BASIC_SYSTEM_DISPLAYER
 #define BASIC_SYSTEM_DISPLAYER
 #include <iostream>
+#include <ncursesw/ncurses.h>
 #include "env.hpp"
 namespace basic_system {
   template <const int xsize,const int ysize>
@@ -23,6 +24,15 @@ namespace basic_system {
       }
       return stream;
    }
+    inline WINDOW& operator>>=(WINDOW& scr) {
+      for(int i=0;i<ysize;i++) {
+        for(int j=0;j<xsize;j++) {
+          printw("%c",(*_grid)[i][j]);
+        }
+        printw("\n");
+      }
+      return scr;
+    }
   protected:
     Grid2D<xsize,ysize> *_grid;
   private:

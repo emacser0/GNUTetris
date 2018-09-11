@@ -12,7 +12,7 @@ template <const int xsize,const int ysize>
     }
     void draw_wall(char wall_ch) {
       for(int i=0;i<ysize;i++) {
-        if(i<10) {
+        if(i<xsize) {
           (*_grid)[0][i]=wall_ch;
           (*_grid)[ysize-1][i]=wall_ch;
         }
