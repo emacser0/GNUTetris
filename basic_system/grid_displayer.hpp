@@ -1,13 +1,13 @@
 #ifndef BASIC_SYSTEM_DISPLAYER
 #define BASIC_SYSTEM_DISPLAYER
 #include <iostream>
-#include <ncursesw/ncurses.h>
+#include "../ncursesw.hpp"
 #include "env.hpp"
 namespace basic_system {
   template <const int xsize,const int ysize>
-  class Displayer {
+  class GridDisplayer {
   public:
-    Displayer(Grid2D<xsize,ysize> *grid) {
+    GridDisplayer(Grid2D<xsize,ysize> *grid) {
       this->_grid=grid;
     }
     inline std::ostream& clear(std::ostream &stream) {
@@ -24,12 +24,14 @@ namespace basic_system {
       }
       return stream;
    }
-    inline WINDOW& operator>>=(WINDOW& scr) {
+    inline
+    ncursesw::WINDOW&
+    operator>>=(ncursesw::WINDOW& scr) {
       for(int i=0;i<ysize;i++) {
         for(int j=0;j<xsize;j++) {
-          printw("%c",(*_grid)[i][j]);
+          ncursesw::printw("%c",(*_grid)[i][j]);
         }
-        printw("\n");
+        ncursesw::printw("\n");
       }
       return scr;
     }

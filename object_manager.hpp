@@ -9,11 +9,11 @@ public:
     grid=new bs::
       Grid2D<xsize,ysize>();
 
-    displayer=new bs::
-      Displayer<xsize,ysize>(grid);
+    grid_displayer=new bs::
+      GridDisplayer<xsize,ysize>(grid);
 
-    drawer=new bs::
-      Drawer<xsize,ysize>(grid);
+    grid_drawer=new bs::
+      GridDrawer<xsize,ysize>(grid);
 
     collide_checker=new ts::
       CollideChecker<xsize,ysize>(grid);
@@ -35,8 +35,8 @@ public:
 
   ObjectManager& operator!() {
     delete grid;
-    delete displayer;
-    delete drawer;
+    delete grid_displayer;
+    delete grid_drawer;
     delete collide_checker;
     delete block_manager;
     delete block_stacker;
@@ -46,8 +46,8 @@ public:
     return *this;
   }
   bs::Grid2D<xsize,ysize> *grid;
-  bs::Displayer<xsize,ysize> *displayer;
-  bs::Drawer<xsize,ysize> *drawer;
+  bs::GridDisplayer<xsize,ysize> *grid_displayer;
+  bs::GridDrawer<xsize,ysize> *grid_drawer;
   ts::CollideChecker<xsize,ysize> *collide_checker;
   ts::BlockManager<xsize,ysize> *block_manager;
   ts::BlockStacker<xsize,ysize> *block_stacker;

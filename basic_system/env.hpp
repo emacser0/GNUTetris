@@ -6,8 +6,8 @@ namespace basic_system {
   template <const int xsize, const int ysize>
   class Grid2D;
   template <const int xsize, const int ysize>
-  class Drawer;
+  class GridDrawer;
   template <const int xsize, const int ysize>
-  class Displayer;
+  class GridDisplayer;
 }
 #endif

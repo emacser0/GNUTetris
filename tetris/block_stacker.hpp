@@ -18,12 +18,17 @@ namespace tetris {
         }
       }
     }
-    basic_system::Drawer<xsize,ysize>&
-    operator>>=(basic_system::Drawer<xsize,ysize>& drawer) {
+    basic_system::GridDrawer<xsize,ysize>&
+    operator>>=(basic_system::GridDrawer<xsize,ysize>& drawer) {
       for(auto i : blocks) {
         drawer.draw_block(0x8000, i[0],i[1]);
       }
       return drawer;
+    }
+    LineCleaner<xsize,ysize>&
+    operator>>=(LineCleaner<xsize,ysize>& lc) {
+      lc.clear_lines(blocks);
+      return lc;
     }
   protected:
     std::set<std::array<int,2>> blocks;

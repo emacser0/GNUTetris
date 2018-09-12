@@ -24,5 +24,12 @@ namespace tetris {
 
   template <const int xsize,const int ysize>
   class BlockStacker;
+
+  template <const int xsize,const int ysize>
+  class LineCleaner;
+
+  class ScoreChecker;
+
+  class BlockHolder;
 }
 #endif

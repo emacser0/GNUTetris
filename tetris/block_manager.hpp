@@ -3,7 +3,10 @@
 #include <cmath>
 #include "../basic_system/basic_system.hpp"
 #include "env.hpp"
+#include "block.hpp"
+#include "block_point.hpp"
 #include "block_stacker.hpp"
+#include "block_holder.hpp"
 #include "collide_checker.hpp"
 namespace tetris _GLIBCXX_VISIBILITY(hidden){
   inline unsigned int
@@ -24,46 +27,7 @@ namespace tetris _GLIBCXX_VISIBILITY(hidden){
   }
 }
 namespace tetris {
-  struct Block{
-  int x,y,block;
-};
 
-
-template <const int xsize,const int ysize>
-  class CollideChecker;
-
-  template <const int xsize,const int ysize>
-  struct BlockPoint {
-  public:
-    BlockPoint(int x, int y) {
-      _x=x,_y=y;
-    }
-    BlockPoint(std::array<int,2> &array) {
-      _x=array[0],_y=array[1];
-    }
-    BlockPoint(std::initializer_list<int> &array) {
-      _x=*(array.begin()),_y=*(array.begin()+1);
-    }
-    BlockManager<xsize,ysize>&
-    operator>>=(BlockManager<xsize,ysize>& bm) {
-      bm._cur_block.x+=_x;
-      bm._cur_block.y+=_y;
-      return bm;
-    }
-    int operator[](int idx) {
-      if(idx==0) {
-        return _x;
-      }
-      else if(idx==1) {
-        return _y;
-      }
-      else {
-        return NULL;
-      }
-    }
-  private:
-    int _x,_y;
-  };
 
   template <const int xsize,const int ysize>
   class BlockManager {
@@ -101,8 +65,8 @@ template <const int xsize,const int ysize>
       change_block();
       return *this;
     }
-    inline basic_system::Drawer<xsize,ysize>&
-    operator>>=(basic_system::Drawer<xsize,ysize> &drawer) {
+    inline basic_system::GridDrawer<xsize,ysize>&
+    operator>>=(basic_system::GridDrawer<xsize,ysize> &drawer) {
       drawer.draw_block(_cur_block.block,_cur_block.x,_cur_block.y);
       return drawer;
     }
@@ -113,6 +77,12 @@ template <const int xsize,const int ysize>
     inline BlockStacker<xsize,ysize>&
     operator>>=(BlockStacker<xsize,ysize> &bs) {
       bs.add_block(_cur_block.block, _cur_block.x, _cur_block.y);
+    }
+    inline BlockHolder&
+    operator>>=(BlockHolder &bh) {
+      bh.hold_block(_cur_block);
+      !(*this);
+      return bh;
     }
     template <typename T>
     inline BlockManager<xsize,ysize>&

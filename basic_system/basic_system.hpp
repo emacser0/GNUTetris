@@ -4,6 +4,6 @@
 #include <array>
 #include <cmath>
 #include "random.hpp"
-#include "drawer.hpp"
-#include "displayer.hpp"
+#include "grid_drawer.hpp"
+#include "grid_displayer.hpp"
 #endif

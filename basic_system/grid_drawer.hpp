@@ -5,9 +5,9 @@
 #include "grid.hpp"
 namespace basic_system {
 template <const int xsize,const int ysize>
-  class Drawer {
+  class GridDrawer {
   public:
-    Drawer(Grid2D<xsize,ysize> *grid) {
+    GridDrawer(Grid2D<xsize,ysize> *grid) {
       _grid=grid;
     }
     void draw_wall(char wall_ch) {
@@ -48,21 +48,21 @@ template <const int xsize,const int ysize>
     void clear_line_vertical_without_wall(int x) {
       clear_grid(x,x+1,1,ysize-1);
     }
-    inline Drawer<xsize,ysize>&
+    inline GridDrawer<xsize,ysize>&
     operator<<=(unsigned char& ch) {
       draw_wall(ch);
       return *this;
     }
-    inline Drawer<xsize,ysize>&
+    inline GridDrawer<xsize,ysize>&
     operator<<=(unsigned char ch) {
       draw_wall(ch);
       return *this;
     }
-    inline Displayer<xsize,ysize>&
-    operator>>=(Displayer<xsize,ysize>& displayer) {
+    inline GridDisplayer<xsize,ysize>&
+    operator>>=(GridDisplayer<xsize,ysize>& displayer) {
       return displayer;
     }
-    inline Drawer<xsize,ysize>&
+    inline GridDrawer<xsize,ysize>&
     operator!() {
       clear_grid_witout_wall();
       return *this;
