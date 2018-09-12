@@ -20,8 +20,8 @@ main(int __attribute__((unused)) argc,
   auto obj_mgr=ObjectManager<ts::x_size,ts::y_size>();
 
   auto &grid=*(obj_mgr.grid);
-  auto &grid_displayer=*(obj_mgr.displayer);
-  auto &grid_drawer=*(obj_mgr.drawer);
+  auto &grid_displayer=*(obj_mgr.grid_displayer);
+  auto &grid_drawer=*(obj_mgr.grid_drawer);
   auto &collide_checker=*(obj_mgr.collide_checker);
   auto &block_manager=*(obj_mgr.block_manager);
   auto &block_stacker=*(obj_mgr.block_stacker);
