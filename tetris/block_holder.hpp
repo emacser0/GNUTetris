@@ -6,13 +6,18 @@
 namespace tetris {
   class BlockHolder {
   public:
-    BlockHolder();
+    BlockHolder() {
+      _holded_block=NULL;
+    }
+    ~BlockHolder() {
+
+    }
     void
     hold_block(Block &block) {
-      _holded_block=block;
+      _holded_block=&block;
     }
   protected:
-    Block& _holded_block;
+    Block* _holded_block;
   private:
   };
 }

@@ -10,7 +10,7 @@ template <const int xsize,const int ysize>
     GridDrawer(Grid2D<xsize,ysize> *grid) {
       _grid=grid;
     }
-    void draw_wall(char wall_ch) {
+    void draw_wall(unsigned char wall_ch) {
       for(int i=0;i<ysize;i++) {
         if(i<xsize) {
           (*_grid)[0][i]=wall_ch;
@@ -31,22 +31,22 @@ template <const int xsize,const int ysize>
       }
     }
     void clear_grid_all() {
-      clear_grid(0,xsize,0,ysize);
+      clear_grid(0,xsize-1,0,ysize-1);
     }
     void clear_grid_witout_wall() {
-      clear_grid(1,xsize-1,1,ysize-1);
+      clear_grid(1,xsize-2,1,ysize-2);
     }
     void clear_line_horizon(int y) {
-      clear_grid(0,xsize,y,y+1);
+      clear_grid(0,xsize-1,y,y);
     }
     void clear_line_vertical(int x) {
-      clear_grid(x,x+1,0,ysize);
+      clear_grid(x,x,0,ysize-1);
     }
     void clear_line_horizon_without_wall(int y) {
-      clear_grid(1,xsize-1,y,y+1);
+      clear_grid(1,xsize-2,y,y);
     }
     void clear_line_vertical_without_wall(int x) {
-      clear_grid(x,x+1,1,ysize-1);
+      clear_grid(x,x,1,ysize-2);
     }
     inline GridDrawer<xsize,ysize>&
     operator<<=(unsigned char& ch) {
@@ -71,8 +71,8 @@ template <const int xsize,const int ysize>
     Grid2D<xsize,ysize> *_grid;
   private:
     void fill_grid(unsigned char ch,int xs,int xe,int ys, int ye) {
-      for(int i=ys;i<ye;i++) {
-        for(int j=xs;j<xe;j++) {
+      for(int i=ys;i<=ye;i++) {
+        for(int j=xs;j<=xe;j++) {
           (*_grid)[i][j]=ch;
         }
       }

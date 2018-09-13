@@ -23,6 +23,15 @@ public:
 
     block_stacker=new ts::
       BlockStacker<xsize,ysize>();
+
+    score_checker=new ts::
+      ScoreChecker();
+
+    block_holder=new ts::
+      BlockHolder();
+  }
+  ~ObjectManager() {
+    !(*this);
   }
   template <typename ...ARGS>
   ts::BlockPoint<xsize,ysize>*
@@ -40,6 +49,8 @@ public:
     delete collide_checker;
     delete block_manager;
     delete block_stacker;
+    delete score_checker;
+    delete block_holder;
     for(auto i : block_point_basket) {
       delete i;
     }
@@ -51,6 +62,8 @@ public:
   ts::CollideChecker<xsize,ysize> *collide_checker;
   ts::BlockManager<xsize,ysize> *block_manager;
   ts::BlockStacker<xsize,ysize> *block_stacker;
+  ts::ScoreChecker *score_checker;
+  ts::BlockHolder *block_holder;
   std::vector<ts::BlockPoint<xsize,ysize>*> block_point_basket;
 protected:
 private:

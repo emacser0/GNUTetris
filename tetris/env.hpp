@@ -15,21 +15,7 @@ namespace tetris {
     0x04E0,
     0x0C60
   };
-
-  template <const int xsize,const int ysize>
-  class CollideChecker;
-
   template <const int xsize,const int ysize>
   class BlockManager;
-
-  template <const int xsize,const int ysize>
-  class BlockStacker;
-
-  template <const int xsize,const int ysize>
-  class LineCleaner;
-
-  class ScoreChecker;
-
-  class BlockHolder;
 }
 #endif

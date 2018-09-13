@@ -27,12 +27,9 @@ namespace tetris _GLIBCXX_VISIBILITY(hidden){
   }
 }
 namespace tetris {
-
-
   template <const int xsize,const int ysize>
   class BlockManager {
   public:
-    friend class BlockPoint<xsize,ysize>;
     BlockManager() {
       _seq=basic_system::random::random_sequence<blocknumber>();
       !(*this);
@@ -77,6 +74,7 @@ namespace tetris {
     inline BlockStacker<xsize,ysize>&
     operator>>=(BlockStacker<xsize,ysize> &bs) {
       bs.add_block(_cur_block.block, _cur_block.x, _cur_block.y);
+      bs.check_lines();
     }
     inline BlockHolder&
     operator>>=(BlockHolder &bh) {
@@ -84,17 +82,11 @@ namespace tetris {
       !(*this);
       return bh;
     }
-    template <typename T>
-    inline BlockManager<xsize,ysize>&
-    operator<<=(std::array<T,2> &d) {
-      _cur_block.x+=d[0];
-      _cur_block.y+=d[1];
-      return *this;
-    }
     basic_system::random::random_sequence<blocknumber> _seq;
   protected:
     Block _cur_block;
   private:
   };
+
 }
 #endif

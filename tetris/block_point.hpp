@@ -1,6 +1,7 @@
 #ifndef BLOCK_POINT
 #define BLOCK_POINT
 #include <array>
+#include "env.hpp"
 namespace tetris {
   template <const int xsize,const int ysize>
   struct BlockPoint {
@@ -14,13 +15,7 @@ namespace tetris {
     BlockPoint(std::initializer_list<int> &array) {
       _x=*(array.begin()),_y=*(array.begin()+1);
     }
-    BlockManager<xsize,ysize>&
-    operator>>=(BlockManager<xsize,ysize>& bm) {
-      bm._cur_block.x+=_x;
-      bm._cur_block.y+=_y;
-      return bm;
-    }
-    int operator[](int idx) {
+    inline int operator[](int idx) {
       if(idx==0) {
         return _x;
       }
@@ -30,6 +25,11 @@ namespace tetris {
       else {
         return NULL;
       }
+    }
+    inline BlockManager<xsize,ysize>&
+    operator>>=(BlockManager<xsize,ysize>& bm) {
+      bm.move_block(_x,_y);
+      return bm;
     }
   private:
     int _x,_y;
