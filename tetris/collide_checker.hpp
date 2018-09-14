@@ -1,7 +1,7 @@
 #ifndef COLLIDE_CHECKER
 #define COLLIDE_CHECKER
 #include <cmath>
-#include "../basic_system/basic_system.hpp"
+#include "../GNUgbs/basic_system.hpp"
 #include "env.hpp"
 namespace tetris {
   template <const int xsize,const int ysize>

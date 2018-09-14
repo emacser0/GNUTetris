@@ -5,6 +5,5 @@ namespace tetris {
     unsigned int block;
     int x,y;
   } Block;
-
 }
 #endif

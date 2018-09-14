@@ -4,7 +4,7 @@
 #include <chrono>
 #include <thread>
 #include <fstream>
-#include "../basic_system/basic_system.hpp"
+#include "../GNUgbs/basic_system.hpp"
 #include "env.hpp"
 #include "score_checker.hpp"
 namespace tetris {
@@ -54,7 +54,7 @@ namespace tetris {
       return checker;
     }
   protected:
-    std::vector<std::array<int,2>> _blocks={};
+    std::vector<std::array<int,2>> _blocks;
   private:
     int _scorecache;
     std::array<int,ysize> _linecache;

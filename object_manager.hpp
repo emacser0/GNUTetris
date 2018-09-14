@@ -1,4 +1,4 @@
-#include "basic_system/basic_system.hpp"
+#include "GNUgbs/basic_system.hpp"
 #include "tetris/tetris.hpp"
 namespace bs = basic_system;
 namespace ts = tetris;
@@ -6,17 +6,26 @@ template <const int xsize,const int ysize>
 class ObjectManager {
 public:
   ObjectManager() {
-    grid=new bs::
+    main_grid=new bs::
       Grid2D<xsize,ysize>();
 
-    grid_displayer=new bs::
-      GridDisplayer<xsize,ysize>(grid);
+    hold_grid=new bs::
+      Grid2D<4,4>();
 
-    grid_drawer=new bs::
-      GridDrawer<xsize,ysize>(grid);
+    main_grid_displayer=new bs::
+      GridDisplayer<xsize,ysize>(main_grid);
+
+    hold_grid_displayer=new bs::
+      GridDisplayer<4,4>(hold_grid);
+
+    main_grid_drawer=new bs::
+      GridDrawer<xsize,ysize>(main_grid);
+
+    hold_grid_drawer=new bs::
+      GridDrawer<4,4>(hold_grid);
 
     collide_checker=new ts::
-      CollideChecker<xsize,ysize>(grid);
+      CollideChecker<xsize,ysize>(main_grid);
 
     block_manager=new ts::
       BlockManager<xsize,ysize>();
@@ -43,9 +52,12 @@ public:
   }
 
   ObjectManager& operator!() {
-    delete grid;
-    delete grid_displayer;
-    delete grid_drawer;
+    delete main_grid;
+    delete hold_grid;
+    delete main_grid_displayer;
+    delete hold_grid_displayer;
+    delete main_grid_drawer;
+    delete hold_grid_drawer;
     delete collide_checker;
     delete block_manager;
     delete block_stacker;
@@ -56,9 +68,12 @@ public:
     }
     return *this;
   }
-  bs::Grid2D<xsize,ysize> *grid;
-  bs::GridDisplayer<xsize,ysize> *grid_displayer;
-  bs::GridDrawer<xsize,ysize> *grid_drawer;
+  bs::Grid2D<xsize,ysize> *main_grid;
+  bs::Grid2D<4,4> *hold_grid;
+  bs::GridDisplayer<xsize,ysize> *main_grid_displayer;
+  bs::GridDisplayer<4,4> *hold_grid_displayer;
+  bs::GridDrawer<xsize,ysize> *main_grid_drawer;
+  bs::GridDrawer<4,4> *hold_grid_drawer;
   ts::CollideChecker<xsize,ysize> *collide_checker;
   ts::BlockManager<xsize,ysize> *block_manager;
   ts::BlockStacker<xsize,ysize> *block_stacker;

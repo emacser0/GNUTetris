@@ -1,7 +1,7 @@
 #ifndef BLOCK_MANAGER
 #define BLOCK_MANAGER
 #include <cmath>
-#include "../basic_system/basic_system.hpp"
+#include "../GNUgbs/basic_system.hpp"
 #include "env.hpp"
 #include "block.hpp"
 #include "block_point.hpp"
@@ -39,13 +39,7 @@ namespace tetris {
       _cur_block.x+=dx;
       _cur_block.y+=dy;
     }
-    void change_block() {
-      int blockidx;
-      _seq >>= blockidx;
-      _cur_block.block=tetromino[blockidx];
-      _cur_block.x=startx;
-      _cur_block.y=starty;
-    }
+
 
     inline unsigned int
     rotate_r() {
@@ -62,30 +56,42 @@ namespace tetris {
       change_block();
       return *this;
     }
+
     inline basic_system::GridDrawer<xsize,ysize>&
     operator>>=(basic_system::GridDrawer<xsize,ysize> &drawer) {
       drawer.draw_block(_cur_block.block,_cur_block.x,_cur_block.y);
       return drawer;
     }
+
     inline bool
     operator>>=(CollideChecker<xsize,ysize> &cc) {
       return cc.check(_cur_block.block,_cur_block.x,_cur_block.y);
     }
+
     inline BlockStacker<xsize,ysize>&
     operator>>=(BlockStacker<xsize,ysize> &bs) {
       bs.add_block(_cur_block.block, _cur_block.x, _cur_block.y);
       bs.check_lines();
     }
+
     inline BlockHolder&
     operator>>=(BlockHolder &bh) {
-      bh.hold_block(_cur_block);
-      !(*this);
+      if(!bh.hold_block(_cur_block)) {
+        !(*this);
+      }
       return bh;
     }
-    basic_system::random::random_sequence<blocknumber> _seq;
   protected:
+    basic_system::random::random_sequence<blocknumber> _seq;
     Block _cur_block;
   private:
+    void change_block() {
+      int blockidx;
+      _seq >>= blockidx;
+      _cur_block.block=tetromino[blockidx];
+      _cur_block.x=startx;
+      _cur_block.y=starty;
+    }
   };
 
 }

@@ -4,7 +4,7 @@ namespace tetris {
   const int nextblock = 5;
   const int blocknumber = 7;
   const int x_size=12,y_size=22;
-  const int startx=4,starty=1;
+  const int startx=6,starty=1;
   const unsigned int tetromino[7]=
   {//I,J,L,O,S,T,Z
     0x0F00,
