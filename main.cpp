@@ -14,7 +14,6 @@ ncurses_init() {
 int
 main(int __attribute__((unused)) argc,
      char __attribute__((unused)) **argv) {
-  int time=500;
   int freq=500;
   unsigned int ch;
   auto obj_mgr=ObjectManager<ts::x_size,ts::y_size>();
@@ -50,7 +49,7 @@ main(int __attribute__((unused)) argc,
   };
   ncurses_init();
   main_grid_drawer <<= '@';
-  for(;time--;) {
+  while(true) {
     ch=nc::wgetch(nc::stdscr);
     switch(ch) {
     case 'a':
@@ -86,7 +85,7 @@ main(int __attribute__((unused)) argc,
     case 0x20:
       while(!(block_manager >>= collide_checker)) {
         move_down >>= block_manager;
-      }
+     }
       while(block_manager >>= collide_checker) {
         move_up >>= block_manager;
       }

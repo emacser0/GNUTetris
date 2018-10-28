@@ -2,7 +2,7 @@
 #define BASIC_SYSTEM_GRID
 #include <array>
 namespace basic_system {
-  template <const int size>
+  template <const size_t size>
   class Grid1D {
   public:
     Grid1D() {
@@ -22,7 +22,7 @@ namespace basic_system {
   private:
   };
 
-  template <const int xsize,const int ysize>
+  template <const size_t xsize,const size_t ysize>
   class Grid2D {
   public:
     Grid2D() {

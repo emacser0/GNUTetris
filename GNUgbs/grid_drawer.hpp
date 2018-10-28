@@ -4,18 +4,18 @@
 #include "grid.hpp"
 #include "grid_displayer.hpp"
 namespace basic_system {
-template <const int xsize,const int ysize>
+template <const size_t xsize,const size_t ysize>
   class GridDrawer {
   public:
     GridDrawer(Grid2D<xsize,ysize> *grid) {
       _grid=grid;
     }
     void draw_wall(unsigned char wall_ch) {
+      for(int i=0;i<xsize;i++) {
+        (*_grid)[0][i]=wall_ch;
+        (*_grid)[ysize-1][i]=wall_ch;
+      }
       for(int i=0;i<ysize;i++) {
-        if(i<xsize) {
-          (*_grid)[0][i]=wall_ch;
-          (*_grid)[ysize-1][i]=wall_ch;
-        }
         (*_grid)[i][0]=wall_ch;
         (*_grid)[i][xsize-1]=wall_ch;
       }

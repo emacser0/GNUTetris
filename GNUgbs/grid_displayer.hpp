@@ -4,7 +4,7 @@
 #include "ncursesw.hpp"
 #include "grid.hpp"
 namespace basic_system {
-  template <const int xsize,const int ysize>
+  template <const size_t xsize,const size_t ysize>
   class GridDisplayer {
   public:
     GridDisplayer(Grid2D<xsize,ysize> *grid) {
